@@ -39,6 +39,19 @@ const U={
 const App={pages:{},
  mount(key,cb){
   const N=U.notifs(),un=N.filter(n=>!n.read),badge=document.getElementById('unread-badge');
+  const role=sessionStorage.getItem('isams_demo_role'),roleLabel=document.getElementById('current-role');
+  if(role&&roleLabel)roleLabel.textContent=role;
+  const accountMenu=document.getElementById('rst').closest('ul');
+  let signout=document.getElementById('signout');
+  if(!signout){
+   const divider=document.createElement('li');
+   divider.innerHTML='<hr class="dropdown-divider">';
+   const item=document.createElement('li');
+   item.innerHTML='<a class="dropdown-item text-danger" href="index.html" id="signout"><i class="bi bi-box-arrow-right me-2"></i>Sign out</a>';
+   accountMenu.append(divider,item);
+   signout=document.getElementById('signout');
+  }
+  signout.onclick=event=>{event.preventDefault();sessionStorage.removeItem('isams_demo_role');location.href=signout.href};
   document.getElementById('org-name').textContent=DB.state.settings.org.name;
   document.getElementById('unread-title').textContent=`Notifications (${un.length} unread)`;
   badge.textContent=un.length;badge.classList.toggle('d-none',!un.length);
@@ -85,4 +98,4 @@ App.pages.settings=()=>{const S=DB.state,st=S.settings;
    pane.querySelectorAll('[data-r]').forEach(i=>st.perms[i.dataset.r][i.dataset.m]=i.checked);DB.save();U.toast('Settings saved')})})};
 
 const page=location.pathname.split('/').pop().replace('.html','');
-if(App.pages[page])App.pages[page]();
+if(App.pages[page==='dashboard'?'index':page])App.pages[page==='dashboard'?'index':page]();
